@@ -15,7 +15,7 @@ WITH
       odl.fact_basket_items fbi
     WHERE
       fbi.country_sk IN ('hbi|eu|nl', 'hbi|eu|be')
-      AND CAST(fbi.date_trading_nk AS DATE) >= DATEADD('day', -365, '2026-02-22')
+      AND CAST(fbi.date_trading_nk AS DATE) >= DATEADD('day', -365, '2026-02-28')
   )
   
   ,
@@ -78,31 +78,31 @@ WITH
       /* Last year variables (52w) within the pre-churn window. */
       COUNT(
         DISTINCT CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -24) THEN fbi.basket_sk
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -24) THEN fbi.basket_sk
         END
       ) AS num_orders_52wk,
       SUM(
         CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -24) THEN fbi.price_total_excl_vat
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -24) THEN fbi.price_total_excl_vat
           ELSE 0
         END
       ) AS sales_52wk,
       SUM(
         CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -24) THEN fbi.quantity
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -24) THEN fbi.quantity
           ELSE 0
         END
       ) AS volume_52wk,
       SUM(
         CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -24)
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -24)
           AND sales_channel_l1_name LIKE 'Online' THEN fbi.price_total_excl_vat
           ELSE 0
         END
       ) AS online_sales_52w,
       SUM(
         CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -24)
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -24)
           AND sales_channel_l1_name NOT LIKE 'Online' THEN fbi.price_total_excl_vat
           ELSE 0
         END
@@ -111,36 +111,36 @@ WITH
       /* Last year to two-year variables (53w_104w) */
       COUNT(
         DISTINCT CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -36)
-          AND fbi.date_trading_nk < add_months('2026-02-22', -24) THEN fbi.basket_sk
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -36)
+          AND fbi.date_trading_nk < add_months('2026-02-28', -24) THEN fbi.basket_sk
         END
       ) AS num_orders_53w_104w,
       SUM(
         CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -36)
-          AND fbi.date_trading_nk < add_months('2026-02-22', -24) THEN fbi.price_total_excl_vat
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -36)
+          AND fbi.date_trading_nk < add_months('2026-02-28', -24) THEN fbi.price_total_excl_vat
           ELSE 0
         END
       ) AS sales_53w_104w,
       SUM(
         CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -36)
-          AND fbi.date_trading_nk < add_months('2026-02-22', -24) THEN fbi.quantity
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -36)
+          AND fbi.date_trading_nk < add_months('2026-02-28', -24) THEN fbi.quantity
           ELSE 0
         END
       ) AS volume_53w_104w,
       SUM(
         CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -36)
-          AND fbi.date_trading_nk < add_months('2026-02-22', -24)
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -36)
+          AND fbi.date_trading_nk < add_months('2026-02-28', -24)
           AND sales_channel_l1_name LIKE 'Online' THEN fbi.price_total_excl_vat
           ELSE 0
         END
       ) AS online_sales_53w_104w,
       SUM(
         CASE
-          WHEN fbi.date_trading_nk >= add_months('2026-02-22', -36)
-          AND fbi.date_trading_nk < add_months('2026-02-22', -24)
+          WHEN fbi.date_trading_nk >= add_months('2026-02-28', -36)
+          AND fbi.date_trading_nk < add_months('2026-02-28', -24)
           AND sales_channel_l1_name NOT LIKE 'Online' THEN fbi.price_total_excl_vat
           ELSE 0
         END
@@ -174,11 +174,11 @@ SELECT
   c.has_rfl,
   c.gender,
   c.country_sk, 
-  ('2026-02-22' - c.last_order_date) AS recency,
+  ('2026-02-28' - c.last_order_date) AS recency,
   c.total_transactions AS frequency,
   c.sales_ttl AS monetary_value,
   c.volume_ttl AS total_volume,
-  ('2026-02-22' - c.first_transaction_date) AS length_of_relationship,
+  ('2026-02-28' - c.first_transaction_date) AS length_of_relationship,
   c.online_sales,
   c.retail_sales,
   c.food_total,
