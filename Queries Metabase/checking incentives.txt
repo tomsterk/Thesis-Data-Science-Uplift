@@ -1,0 +1,103 @@
+WITH customers_campaign AS (
+  SELECT DISTINCT
+    ec.file_name AS churn_group,
+    dc.customer_sk
+  FROM ext_uploads.file_user_ids_uplift_20260212125800 ec
+  LEFT JOIN odl.dim_customers dc
+    ON dc.customer_nk = ec.user_id
+),
+
+/* 1) First define the *output basket set*: baskets that match the coupon filter */
+output_baskets AS (
+  SELECT DISTINCT
+    fbi.basket_sk
+  FROM odl.fact_basket_items fbi
+  JOIN odl.fact_basket_items_savings fbis
+    ON fbi.basket_sk = fbis.basket_sk
+  WHERE fbi.customer_sk IN (SELECT customer_sk FROM customers_campaign)
+    AND fbi.date_trading_nk >= DATE '2026-02-12'
+    AND (
+          fbis.coupon_code IN (
+            '9832000019239',
+            '9832000019246',
+            '9862000019892',
+            '9862000019908',
+            'T0726013026033110003948',
+            'T0726013026033125005638',
+            'T0726013026033105106721',
+            'T0726013026033110204391',
+            'C0726013026033146972105',
+            'T0926013026033110007912',
+            'T0926013026033125008136',
+            'T0926013026033105109673',
+            'T0926013026033110200139',
+            'C0926013026033146972846'
+          )
+          OR fbis.coupon_code LIKE 'CRN5EU-%'
+          OR fbis.coupon_code LIKE 'CRN10EU-%'
+          OR fbis.coupon_code LIKE 'CRN10-%'
+          OR fbis.coupon_code LIKE 'CRN25-%'
+        )
+),
+
+/* 2) Now compute basket-level totals *only for those output baskets* */
+basket_pricetotal AS (
+  SELECT
+    fbi.basket_sk,
+    SUM(fbi.price_total_excl_vat) AS sum_pricetotal_exclvat
+  FROM odl.fact_basket_items fbi
+  JOIN output_baskets ob
+    ON fbi.basket_sk = ob.basket_sk
+  GROUP BY 1
+)
+
+SELECT
+  CASE
+    WHEN fbis.coupon_code LIKE 'CRN10EU-%'
+      OR fbis.coupon_code = 'T0726013026033110204391'
+      OR ds.saving_name = '€10 off, minimum purchase €20'
+    THEN '€10 korting bij €20'
+	when fbis.coupon_code LIKE 'CRN5EU-%' then '€5 korting bij €10' 
+    ELSE ds.saving_name
+  END AS saving_name_mapped,
+  COUNT(DISTINCT fbi.basket_sk) AS baskets,
+  SUM(DISTINCT bp.sum_pricetotal_exclvat) AS sum_pricetotal_exclvat,
+  SUM(DISTINCT bp.sum_pricetotal_exclvat) / COUNT(DISTINCT fbi.basket_sk) AS aov
+FROM odl.fact_basket_items fbi
+JOIN odl.fact_basket_items_savings fbis
+  ON fbi.basket_sk = fbis.basket_sk
+LEFT JOIN odl.dim_saving_categories sc
+  USING (saving_category_sk)
+LEFT JOIN odl.dim_savings ds
+  USING (saving_sk)
+JOIN output_baskets ob
+  ON fbi.basket_sk = ob.basket_sk
+JOIN basket_pricetotal bp
+  ON fbi.basket_sk = bp.basket_sk
+WHERE fbi.customer_sk IN (SELECT customer_sk FROM customers_campaign)
+  AND fbi.date_trading_nk >= DATE '2026-02-12'
+  AND (
+        fbis.coupon_code IN (
+          '9832000019239',
+          '9832000019246',
+          '9862000019892',
+          '9862000019908',
+          'T0726013026033110003948',
+          'T0726013026033125005638',
+          'T0726013026033105106721',
+          'T0726013026033110204391',
+          'C0726013026033146972105',
+          'T0926013026033110007912',
+          'T0926013026033125008136',
+          'T0926013026033105109673',
+          'T0926013026033110200139',
+          'C0926013026033146972846'
+        )
+        OR fbis.coupon_code LIKE 'CRN5EU-%'
+        OR fbis.coupon_code LIKE 'CRN10EU-%'
+        OR fbis.coupon_code LIKE 'CRN10-%'
+        OR fbis.coupon_code LIKE 'CRN25-%'
+      )
+GROUP BY
+  1
+ORDER BY 2 DESC;
