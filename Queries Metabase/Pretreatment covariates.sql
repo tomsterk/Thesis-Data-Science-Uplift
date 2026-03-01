@@ -54,7 +54,7 @@ WITH
       ) AS vhms_total,
       SUM(
         CASE
-          WHEN category_fpna_l1_name = 'Sports' THEN price_total_excl_vat
+          WHEN category_fpna_l1_name = 'Active Nutrition' THEN price_total_excl_vat
           ELSE 0
         END
       ) AS sports_total,
