@@ -4,8 +4,7 @@ WITH
       file_name AS churn_group,
       user_id as customer_nk
     FROM
-      ext_uploads.file_user_ids_uplift_20260212125800 ec
-      LEFT JOIN odl.dim_customers dc ON dc.customer_nk = ec.user_id
+      ext_uploads.file_user_ids_uplift_20260212125800 
 
   ),
     customers_with_recent_purchases AS (
