@@ -1,5 +1,6 @@
 WITH
   customers_campaign AS (
+	/* Customers that received incentive or control group */
     SELECT
       file_name AS churn_group,
       user_id AS customer_nk
