@@ -5,7 +5,6 @@ WITH
       user_id AS customer_nk
     FROM
       ext_uploads.file_user_ids_uplift_20260212125800 ec
-      LEFT JOIN odl.dim_customers dc ON dc.customer_nk = ec.user_id
   ),
   covariates_churn AS (
     SELECT
@@ -134,8 +133,7 @@ WITH
       LEFT JOIN odl.dim_categories_fpna ON odl.dim_products.category_fpna_sk = odl.dim_categories_fpna.category_fpna_sk
       LEFT JOIN odl.dim_sales_channels USING (sales_channel_sk)
     WHERE
-      fbi.country_sk IN ('hbi|eu|nl', 'hbi|eu|be')
-      AND date_trading_nk < '2026-02-12'
+	  date_trading_nk < '2026-02-12'
       AND customer_nk IN (
         SELECT DISTINCT
           customer_nk
