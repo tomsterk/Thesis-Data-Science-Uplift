@@ -157,6 +157,7 @@ WITH
     WHERE
       fbi.country_sk IN ('hbi|eu|nl', 'hbi|eu|be')
       AND fbi.date_trading_nk >= '2026-02-12'
+	  AND fbi.date_trading_nk <= '2026-03-12'
     GROUP BY
       dc.customer_nk
   )
