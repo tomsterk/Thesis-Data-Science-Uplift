@@ -21,49 +21,51 @@ def coerce_metrics_to_numeric(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame
         .apply(pd.to_numeric, errors="coerce")
     )
     return df
-
+    
 def uplift_by_decile_bin(
     df,
     treatment_col="treatment",
-    outcome_col="cameback",
+    outcome_col="reactivated",
     size=10,
     binary_uplift=True,
 ):
+    """
+    Compute per-decile and cumulative uplift metrics from a scored DataFrame.
+
+    Expects `df` to be pre-sorted by predicted uplift (descending), so that
+    bin 1 contains the highest-scoring customers and bin `size` the lowest.
+
+    """
     n = len(df)
     bins = range(1, size + 1)
-
     results = []
 
     for b in bins:
+        # --- Slice the bin using ceiling-based index boundaries ---
         start = int(np.ceil(n * (b - 1) / size))
         end = int(np.ceil(n * b / size))
         subset = df.iloc[start:end]
 
-        # Apply for the binary uplift models treatment vs control fo each incentive 
+        # --- Identify treated vs. control rows within this bin ---
         if binary_uplift:
-            # --- MTUM logic (your provided block) ---
+            # Binary uplift format: treatment_col contains string labels.
             t = subset[treatment_col].astype(str).str.strip()
             t_lower = t.str.lower()
-
-            # Control rows look like "control_1", "control_2", ...
             is_control = t_lower.str.startswith("control")
-
-            # Everything else is treated, but only if it has a trailing digit
             last_digit = t_lower.str.extract(r"(\d)\s*$", expand=False)
             is_treated = (~is_control) & last_digit.notna()
-
-        # Apply for the mtum the comparison of all control 
         else:
+            # MTUM format: treatment_col is integer-coded.
+            # 0 = control; any non-zero, non-null value = treated.
             t = subset[treatment_col]
             is_control = t.eq(0)
             is_treated = t.ne(0) & t.notna()
 
+        # --- Per-bin counts and conversion rates ---
         treated_n = int(is_treated.sum())
         control_n = int(is_control.sum())
-
         treated_converted_n = int(subset.loc[is_treated, outcome_col].sum())
         control_converted_n = int(subset.loc[is_control, outcome_col].sum())
-
         treated_rate = float(subset.loc[is_treated, outcome_col].mean()) if treated_n > 0 else 0.0
         control_rate = float(subset.loc[is_control, outcome_col].mean()) if control_n > 0 else 0.0
 
@@ -79,42 +81,56 @@ def uplift_by_decile_bin(
                 "control_converted_n": control_converted_n,
                 "treated_rate": treated_rate,
                 "control_rate": control_rate,
-                "uplift": treated_rate - control_rate,
+                "uplift": treated_rate - control_rate,  # per-bin raw uplift
             }
         )
 
     df_out = pd.DataFrame(results).sort_values("bin").reset_index(drop=True)
 
+    # --- Cumulative statistics (top-k targeting perspective) ---
+    # Running totals of treated/control group sizes and conversions
     df_out["cum_treated_n"] = df_out["treated_n"].cumsum()
     df_out["cum_control_n"] = df_out["control_n"].cumsum()
     df_out["cum_treated_converted_n"] = df_out["treated_converted_n"].cumsum()
     df_out["cum_control_converted_n"] = df_out["control_converted_n"].cumsum()
 
+    # Cumulative conversion rates 
     df_out["cum_treated_rate"] = (
         df_out["cum_treated_converted_n"] / df_out["cum_treated_n"].replace(0, np.nan)
     ).fillna(0.0)
-
     df_out["cum_control_rate"] = (
         df_out["cum_control_converted_n"] / df_out["cum_control_n"].replace(0, np.nan)
     ).fillna(0.0)
 
+    # Fraction of total population targeted so far (x-axis for Qini-style curves)
     df_out["cum_population_frac"] = df_out["bin_n"].cumsum() / df_out["bin_n"].sum()
 
+    # --- Incremental gains curve ---
+    # inc_gains = cumulative uplift × fraction targeted, i.e. the area-based
+    # measure of extra conversions gained by targeting the top-k% vs. not treating.
     df_out["inc_gains"] = (
         (df_out["cum_treated_rate"] - df_out["cum_control_rate"])
         * df_out["cum_population_frac"]
     )
 
+    # Random targeting baseline: a straight line from origin to the final
+    df_out["random_expected"] = df_out["cum_population_frac"] * df_out["inc_gains"].iloc[-1]
+
+    # Lift over random
+    df_out["lift_over_random"] = df_out["inc_gains"] - df_out["random_expected"]
+
     return df_out
-
-
     
+def calc_auuc(df):
+    """Area between uplift curve and random baseline (trapezoid rule)."""
+    x = np.concatenate([[0], df["cum_population_frac"].values])
+    y = np.concatenate([[0], df["lift_over_random"].values])
+    return np.trapezoid(y, x)
 def plot_incremental_response_rate(uplift_curve_df):
     df = uplift_curve_df.copy()
-
     df["pct_targeted"] = df["bin"] / df["bin"].max()
     final_inc_gain = df["inc_gains"].iloc[-1]
-
+    auuc = calc_auuc(df)
     fig = px.line(
         df,
         x="pct_targeted",
@@ -126,6 +142,9 @@ def plot_incremental_response_rate(uplift_curve_df):
         },
         title="Incremental Response Rate",
     )
+    # Rename the default px.line trace
+    fig.data[0].name = "Model Uplift"
+    fig.data[0].showlegend = True
 
     fig.add_trace(
         go.Scatter(
@@ -136,7 +155,17 @@ def plot_incremental_response_rate(uplift_curve_df):
             line=dict(dash="dash"),
         )
     )
-
+    fig.add_annotation(
+        x=0.95, y=1.2,
+        xref="paper", yref="paper",
+        text=f"AUUC = {auuc:.5f}",
+        showarrow=False,
+        font=dict(size=13),
+        bgcolor="white",
+        bordercolor="black",
+        borderwidth=1,
+        borderpad=4,
+    )
     fig.update_layout(
         template="plotly_white",
         title_x=0.5,
@@ -144,9 +173,51 @@ def plot_incremental_response_rate(uplift_curve_df):
         xaxis=dict(tickformat=".0%"),
         yaxis=dict(tickformat=".2%"),
     )
-
     return fig
 
+def plot_combined_incremental_response_rate(qini_bins_by_model):
+    fig = go.Figure()
+    colors = px.colors.qualitative.Set1
+
+    # average final_inc_gain across all models for the random diagonal
+    avg_final = qini_bins_by_model.groupby("model").apply(
+        lambda g: g["inc_gains"].iloc[-1]
+    ).mean()
+
+    for i, (model, g) in enumerate(qini_bins_by_model.groupby("model")):
+        df = g.copy()
+        df["pct_targeted"] = df["bin"] / df["bin"].max()
+        fig.add_trace(
+            go.Scatter(
+                x=df["pct_targeted"],
+                y=df["inc_gains"],
+                mode="lines+markers",
+                name=f"{model}",
+                line=dict(color=colors[i % len(colors)]),
+            )
+        )
+
+    # single random targeting diagonal (averaged across models)
+    fig.add_trace(
+        go.Scatter(
+            x=[0, 1],
+            y=[0, avg_final],
+            mode="lines",
+            name="Random Targeting",
+            line=dict(dash="dash", color="grey"),
+        )
+    )
+
+    fig.update_layout(
+        template="plotly_white",
+        title="Incremental Response Rate | All Models",
+        title_x=0.5,
+        legend_title_text="",
+        xaxis=dict(title="% Targeted", tickformat=".0%"),
+        yaxis=dict(title="Incremental Response Rate", tickformat=".2%"),
+    )
+    return fig
+    
 ################################################################################################
 # Function to return the prior probabilities of treatments per treatment group, i.e. 0 = control
 # Used for counteracting the imbalance of treatment groups
@@ -159,7 +230,7 @@ def get_treatment_probs_from_y_true(
     y_true_col: str = "y_true",
 ) -> Dict[int, float]:
     """
-    Compute P(T=t) using only the last digit of y_true (e.g., 'cameback_3' -> 3).
+    Compute P(T=t) using only the last digit of y_true (e.g., 'reactivated_3' -> 3).
     Returns a dict like {0: 0.52, 1: 0.11, ...}.
     """
     probs = (
@@ -183,8 +254,8 @@ def uplift_mmoa(
     df: pd.DataFrame,
     *,
     k: int,
-    resp_prefix: str = "cameback",
-    nonresp_prefix: str = "no_cameback",
+    resp_prefix: str = "reactivated",
+    nonresp_prefix: str = "no_reactivated",
     treatment_probs: Dict[int, float],
     return_parts: bool = True,
 ) -> Union[pd.Series, Tuple[pd.Series, pd.DataFrame]]:
