@@ -126,11 +126,13 @@ def calc_auuc(df):
     x = np.concatenate([[0], df["cum_population_frac"].values])
     y = np.concatenate([[0], df["lift_over_random"].values])
     return np.trapezoid(y, x)
+
 def plot_incremental_response_rate(uplift_curve_df):
     df = uplift_curve_df.copy()
     df["pct_targeted"] = df["bin"] / df["bin"].max()
     final_inc_gain = df["inc_gains"].iloc[-1]
     auuc = calc_auuc(df)
+
     fig = px.line(
         df,
         x="pct_targeted",
@@ -138,10 +140,11 @@ def plot_incremental_response_rate(uplift_curve_df):
         markers=True,
         labels={
             "pct_targeted": "% Targeted",
-            "inc_gains": "Incremental Response Rate",
+            "inc_gains": "Cumulative Incremental Gain",
         },
-        title="Incremental Response Rate",
+        title="Qini Curve",
     )
+
     # Rename the default px.line trace
     fig.data[0].name = "Model Uplift"
     fig.data[0].showlegend = True
@@ -155,6 +158,7 @@ def plot_incremental_response_rate(uplift_curve_df):
             line=dict(dash="dash"),
         )
     )
+
     fig.add_annotation(
         x=0.95, y=1.2,
         xref="paper", yref="paper",
@@ -166,6 +170,7 @@ def plot_incremental_response_rate(uplift_curve_df):
         borderwidth=1,
         borderpad=4,
     )
+
     fig.update_layout(
         template="plotly_white",
         title_x=0.5,
@@ -173,8 +178,9 @@ def plot_incremental_response_rate(uplift_curve_df):
         xaxis=dict(tickformat=".0%"),
         yaxis=dict(tickformat=".2%"),
     )
-    return fig
 
+    return fig
+     
 def plot_combined_incremental_response_rate(qini_bins_by_model):
     fig = go.Figure()
     colors = px.colors.qualitative.Set1
@@ -210,11 +216,11 @@ def plot_combined_incremental_response_rate(qini_bins_by_model):
 
     fig.update_layout(
         template="plotly_white",
-        title="Incremental Response Rate | All Models",
+        title="Qini curve| All Models",
         title_x=0.5,
         legend_title_text="",
         xaxis=dict(title="% Targeted", tickformat=".0%"),
-        yaxis=dict(title="Incremental Response Rate", tickformat=".2%"),
+        yaxis=dict(title="Cumulative Incremental Gain", tickformat=".2%"),
     )
     return fig
     
