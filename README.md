@@ -56,17 +56,30 @@ Thesis Code/
 
 ## Notebooks — Execution Order
 
-The notebooks follow the two-phase experimental design of the thesis. Below is the recommended reading/execution order.
-
 ### Phase 1 — Model Training & Evaluation
-
+ 
 | # | Notebook | Description |
 |---|----------|-------------|
-| 1 | `Covariates analysis.ipynb` | Exploratory analysis of pretreatment covariates used as model features. |
-| 2 | `MMOA multi outcome prediction phase 1.ipynb` | Trains the multi-outcome prediction models (reaction, sales, margin) that feed into MTUM. |
-| 3 | `MMOA calibration and evaluation phase 1.ipynb` | Evaluates calibration and predictive performance of the multi-outcome models. |
-| 4 | `MMOA uplift phase 1.ipynb` | Computes MTUM uplift scores and Qini curves on Phase 1 experimental data. |
-| 5 | `Binary RF uplift experimental phase 1.ipynb` | Trains and evaluates the Binary Random Forest uplift model on Phase 1 data. |
-| 6 | `Randomness check experimental phase 1.ipynb` | Validates randomisation quality of treatment/control assignment in Phase 1. |
-| 7 | `Effectiveness experiments.ipynb` | Runs significance tests (pooled & per-arm) across both phases. |
+| 1 | `Randomness check experimental phase 1.ipynb` | Validates randomisation quality of treatment/control assignment in Phase 1. | Chapter 4.1.1 in the Thesis
+| 2 | `Binary RF uplift experimental phase 1.ipynb` | Training of binary uplift models and evaluation of the models in Phase 1 | Chapter 4.1.3 in the Thesis
+| 3 | `MMOA multi outcome prediction phase 1.ipynb` | Trains the base models of the MTUM and applies dirichlet calibration | Chapter 4.1.4 in the Thesis
+| 3 | `MMOA calibration and evaluation phase 1.ipynb` | Evaluates the calibration of the different model configurations | Chapter 4.1.4 in the Thesis
+| 4 | `MMOA uplift phase 1.ipynb` | Computes MTUM uplift scores and Qini curves on Phase 1 experimental data. | Chapter 4.1.4 in the Thesis
+
+
+ 
+### Phase 2 — Deployment & Causal Comparison
+ 
+| # | Notebook | Description |
+|---|----------|-------------|
+| 7 | `MMOA deployement model phase 2.ipynb` | Deploys the MTUM model to select treatment assignments for Phase 2. |
+| 8 | `Binary RF uplift deployement model phase 2.ipynb` | Deploys the Binary RF model to select treatment assignments for Phase 2. |
+| 9 | `Correction crm check experimental phase 2.ipynb` | Documents and corrects a CRM data issue discovered during Phase 2 deployment. |
+ 
+### Results — Significance Testing
+ 
+| # | Notebook | Description |
+|---|----------|-------------|
+| 10 | `Effectiveness experiments.ipynb` | Runs significance tests (pooled & per-arm) across both phases. Outputs to `Output/`. |
+ 
 
