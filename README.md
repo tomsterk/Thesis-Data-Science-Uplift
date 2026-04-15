@@ -18,12 +18,12 @@ Thesis Code/
 │   ├── Churned bought categories 2026-02-11.sql # Purchase history of churned customers
 │   ├── Total churned customers 2026-02-11.sql   # Full churned customer population
 │   ├── Performance experimental phase 1.sql     # Evaluation dataset phase 1
-│   ├── Performance experimental phase 2.sql     # Evaluation dataset phase 1
+│   ├── Performance experimental phase 2.sql     # Evaluation dataset phase 2
 |
 ├── Data/
 │   ├── covariates_modeling_uplift_models_2026-03-13.csv
 │   ├── covariates_deployment_dataset_2026-03-17.csv
-│   ├── df_preds.csv
+│   ├── df_preds.csv                    # predidictions made by the MTUM for all four different configurations of models phase 1
 │   ├── experimental_phase_1.csv        # Customer-level results Phase 1
 │   └── Output_phase_2/                 # Customer-level results Phase 2
 │
