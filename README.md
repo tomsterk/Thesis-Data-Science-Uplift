@@ -13,7 +13,7 @@ Thesis Code/
 │   └── data_utils.py                  # Functions used for modeling, and visualization
 │
 ├── Queries Metabase/
-|   SQL queries used to generate the data from the database
+|   SQL queries used to generate the customer data from the database
 │   ├── Pretreatment covariates.sql              # Covariates query (modeling)
 │   ├── Pretreatment covariates deployement.sql  # Covariates query (deployment)
 │   ├── Churned bought categories 2026-02-11.sql # Purchase history of churned customers
