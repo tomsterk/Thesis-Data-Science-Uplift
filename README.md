@@ -56,19 +56,19 @@ Thesis Code/
 
 ## Notebooks — Execution Order
 
-### Phase 1 — Model Training & Evaluation
+### Phase 1 — Model Training & Evaluation Phase 1
  
 | # | Notebook | Description |
 |---|----------|-------------|
 | 1 | `Randomness check experimental phase 1.ipynb` | Validates pretreatment randomisation of treatment/control assignment in Phase 1. | Chapter 4.1.1 in the Thesis
 | 2 | `Binary RF uplift experimental phase 1.ipynb` | Training of binary uplift models and evaluation of the models in Phase 1 | Chapter 4.1.3 in the Thesis
 | 3 | `MMOA multi outcome prediction phase 1.ipynb` | Trains the base models of the MTUM and applies dirichlet calibration | Chapter 4.1.4 in the Thesis
-| 3 | `MMOA calibration and evaluation phase 1.ipynb` | Evaluates the calibration of the different model configurations | Chapter 4.1.4 in the Thesis
-| 4 | `MMOA uplift phase 1.ipynb` | Computes MTUM uplift scores and Qini curves on Phase 1 experimental data. | Chapter 4.1.4 in the Thesis
+| 4 | `MMOA calibration and evaluation phase 1.ipynb` | Evaluates the calibration of the different model configurations | Chapter 4.1.4 in the Thesis
+| 5 | `MMOA uplift phase 1.ipynb` | Computes MTUM uplift scores and Qini curves on Phase 1 experimental data. | Chapter 4.1.4 in the Thesis
 
 
  
-### Phase 2 — Deployment & Causal Comparison
+### Phase 2 — Deployment Phase 2
  
 | # | Notebook | Description |
 |---|----------|-------------|
