@@ -47,7 +47,7 @@ Thesis Code/
 │   ├── qini_bins_binary_uplift.xlsx                 # Bins with data used to generate the Qini plots
 │   ├── cate_explorer_v2.html                        # Interactive CATE exploration used to share insight with CRM team
 │   ├── Output_qini_curves/                          # Qini plots binary uplift models
-│   ├── MTUM_phase_1_output_distribution/ # Distribution plots MTUM predictions
+│   ├── MTUM_phase_1_output_distribution/            # Distribution plots MTUM predictions
 │   └── classification_output/
 │
 ├── Notebooks (see below)
