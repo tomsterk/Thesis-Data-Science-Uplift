@@ -72,14 +72,14 @@ Thesis Code/
  
 | # | Notebook | Description |
 |---|----------|-------------|
-| 7 | `MMOA deployement model phase 2.ipynb` | Deploys the MTUM model to select treatment assignments for Phase 2. |
-| 8 | `Binary RF uplift deployement model phase 2.ipynb` | Deploys the Binary RF model to select treatment assignments for Phase 2. |
-| 9 | `Correction crm check experimental phase 2.ipynb` | Documents and corrects a CRM data issue discovered during Phase 2 deployment. |
+| 6 | `MMOA deployement model phase 2.ipynb` | Deploys the MTUM model to select treatment assignments for Phase 2. |
+| 7 | `Binary RF uplift deployement model phase 2.ipynb` | Deploys the Binary RF model to select treatment assignments for Phase 2. |
+| 8 | `Correction crm check experimental phase 2.ipynb` | Documents and corrects a CRM data issue discovered during Phase 2 deployment. |
  
 ### Results — Significance Testing
  
 | # | Notebook | Description |
 |---|----------|-------------|
-| 10 | `Effectiveness experiments.ipynb` | Runs significance tests (pooled & per-arm) across both phases. Outputs to `Output/`. |
+| 9 | `Effectiveness experiments.ipynb` | Runs significance tests (pooled & per-arm) across both phases. Outputs to `Output/`. |
  
 
