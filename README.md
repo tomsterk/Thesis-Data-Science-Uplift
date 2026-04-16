@@ -40,7 +40,7 @@ Thesis Code/
 |   └── Correction_crm_users.csv        # Customers that were eligible to target with e-mail marketing in the customer data platform of the CRM team
 │
 ├── Output/
-│   ├── phase1_significance_results_2026-04-15.xlsx  # Significance tests Phase 1
+│   ├── phase1_significance_results_2026-03-13.xlsx  # Significance tests Phase 1
 │   ├── phase2_significance_results_2026-04-15.xlsx  # Significance tests Phase 2
 │   ├── ttest_results.xlsx                           # Randomness check rfm variables pretreatment covariates phase 1
 │   ├── gender_results.xlsx                          # Randomness check gender pretreatment covariates phase 1
