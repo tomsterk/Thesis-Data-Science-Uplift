@@ -42,14 +42,11 @@ Thesis Code/
 ├── Output/
 │   ├── phase1_significance_results_2026-04-15.xlsx  # Significance tests Phase 1
 │   ├── phase2_significance_results_2026-04-15.xlsx  # Significance tests Phase 2
-│   ├── significance_tests.xlsx
-│   ├── uplift_significance_results.xlsx
-│   ├── ttest_results.xlsx
-│   ├── gender_results.xlsx
-│   ├── qini_bins_binary_uplift.xlsx
-│   ├── cate_explorer.html               # Interactive CATE exploration
-│   ├── cate_explorer_v2.html
-│   ├── Output_qini_curves/              # Qini curve plots
+│   ├── ttest_results.xlsx                           # Randomness check rfm variables pretreatment covariates phase 1
+│   ├── gender_results.xlsx                          # Randomness check gender pretreatment covariates phase 1
+│   ├── qini_bins_binary_uplift.xlsx                 # Bins with data used to generate the Qini plots
+│   ├── cate_explorer_v2.html                        # Interactive CATE exploration used to share insight with CRM team
+│   ├── Output_qini_curves/                          # Qini plots binary uplift models
 │   ├── MTUM_phase_1_output_distribution/ # Distribution plots MTUM predictions
 │   └── classification_output/
 │
