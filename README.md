@@ -1,6 +1,6 @@
 # Thesis Code — Uplift Modeling MTUM
 
-This code repository contains all the SQL queries, datasets and notebooks that were used to benchmark the binary uplift RF models versus the MTUM can be found. 
+This code repository contains all the SQL queries, datasets descriptions and notebooks that were used to benchmark the binary uplift RF models versus the MTUM can be found. 
 ---
 
 ## Project Structure
