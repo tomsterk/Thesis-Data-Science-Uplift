@@ -60,7 +60,7 @@ Thesis Code/
  
 | # | Notebook | Description |
 |---|----------|-------------|
-| 1 | `Randomness check experimental phase 1.ipynb` | Validates randomisation quality of treatment/control assignment in Phase 1. | Chapter 4.1.1 in the Thesis
+| 1 | `Randomness check experimental phase 1.ipynb` | Validates pretreatment randomisation of treatment/control assignment in Phase 1. | Chapter 4.1.1 in the Thesis
 | 2 | `Binary RF uplift experimental phase 1.ipynb` | Training of binary uplift models and evaluation of the models in Phase 1 | Chapter 4.1.3 in the Thesis
 | 3 | `MMOA multi outcome prediction phase 1.ipynb` | Trains the base models of the MTUM and applies dirichlet calibration | Chapter 4.1.4 in the Thesis
 | 3 | `MMOA calibration and evaluation phase 1.ipynb` | Evaluates the calibration of the different model configurations | Chapter 4.1.4 in the Thesis
