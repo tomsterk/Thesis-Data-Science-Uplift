@@ -34,9 +34,9 @@ Thesis Code/
 │   ├── control_selected_multi.csv      # Control group selection — MTUM
 │   ├── treatment_selected_binary.csv   # Treatment group selection — Binary RF
 │   ├── treatment_selected_multi.csv    # Treatment group selection — MTUM
-│   ├── *_2.csv                         # Revised versions after CRM correction
-│   ├── Correction_crm_users.csv        # CRM correction file
-│   └── Upload_crm_phase_2_winback.csv  # Final upload file for CRM system
+│   ├── *_2.csv                         # New runs with additonal information on the control group
+│   ├── Upload_crm_phase_2_winback.csv  # Combined file with all the csutomers that were selected for targeting
+|   └── Correction_crm_users.csv        # Customers that were eligible to target with e-mail marketing in the customer data platform of the CRM team
 │
 ├── Output/
 │   ├── phase1_significance_results_2026-04-15.xlsx  # Significance tests Phase 1
