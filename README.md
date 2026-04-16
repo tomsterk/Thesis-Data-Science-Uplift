@@ -50,8 +50,7 @@ Thesis Code/
 │   ├── MTUM_phase_1_output_distribution/            # Distribution plots MTUM predictions
 │   └── classification_output/
 │
-├── Notebooks (see below)
-└── catboost_info/                        # Auto-generated CatBoost training logs
+└── Notebooks (see below)
 ```
 
 ## Notebooks — Execution Order
