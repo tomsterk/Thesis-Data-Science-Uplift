@@ -29,7 +29,7 @@ Thesis Code/
 │   └── Output_phase_2/performance_experimental_phase_2_2026-04-15.csv                 # Customer-level results Phase 2
 │
 ├── Input_phase_2/
-│   This folder contains the output of the binary uplift models and the MTUM that were deployed in phase 2
+│   This folder contains the selected customer for targeting of the binary uplift models and the MTUM that were deployed in phase 2
 │   ├── control_selected_binary.csv     # Control group selection — Binary RF
 │   ├── control_selected_multi.csv      # Control group selection — MTUM
 │   ├── treatment_selected_binary.csv   # Treatment group selection — Binary RF
