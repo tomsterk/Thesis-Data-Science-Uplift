@@ -1,4 +1,4 @@
-# Thesis Code — Uplift Modeling MTUM
+# Thesis Code uplift Modeling MTUM
 
 This code repository contains all the SQL queries, datasets descriptions and notebooks that were used to benchmark the binary uplift RF models versus the MTUM can be found. 
 ---
@@ -50,13 +50,12 @@ Thesis Code/
 │   ├── MTUM_phase_1_output_distribution/            # Distribution plots MTUM predictions
 │   └── classification_output/
 │
-├── Notebooks (see below)
-└── catboost_info/                        # Auto-generated CatBoost training logs
+└── Notebooks (see below)
 ```
 
-## Notebooks — Execution Order
+## Notebooks execution Order
 
-### Phase 1 — Model Training & Evaluation Phase 1
+### Phase 1 model Training & Evaluation Phase 1
  
 | # | Notebook | Description |
 |---|----------|-------------|
@@ -68,7 +67,7 @@ Thesis Code/
 
 
  
-### Phase 2 — Deployment Phase 2
+### Phase 2 deployment Phase 2
  
 | # | Notebook | Description |
 |---|----------|-------------|
@@ -76,7 +75,7 @@ Thesis Code/
 | 7 | `Binary RF uplift deployement model phase 2.ipynb` | Deploys the Binary RF model to select treatment assignments for Phase 2. |
 | 8 | `Correction crm check experimental phase 2.ipynb` | Documents and corrects a CRM data issue discovered during Phase 2 deployment. |
  
-### Results — Significance Testing
+### Results significance Testing
  
 | # | Notebook | Description |
 |---|----------|-------------|
