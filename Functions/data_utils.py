@@ -180,16 +180,14 @@ def plot_incremental_response_rate(uplift_curve_df):
     )
 
     return fig
-     
 def plot_combined_incremental_response_rate(qini_bins_by_model):
     fig = go.Figure()
     colors = px.colors.qualitative.Set1
-
+    symbols = ["circle", "square", "triangle-up", "diamond", "cross", "x", "star"]
     # average final_inc_gain across all models for the random diagonal
     avg_final = qini_bins_by_model.groupby("model").apply(
         lambda g: g["inc_gains"].iloc[-1]
     ).mean()
-
     for i, (model, g) in enumerate(qini_bins_by_model.groupby("model")):
         df = g.copy()
         df["pct_targeted"] = df["bin"] / df["bin"].max()
@@ -200,9 +198,13 @@ def plot_combined_incremental_response_rate(qini_bins_by_model):
                 mode="lines+markers",
                 name=f"{model}",
                 line=dict(color=colors[i % len(colors)]),
+                marker=dict(
+                    symbol=symbols[i % len(symbols)],
+                    size=9,
+                    color=colors[i % len(colors)],
+                ),
             )
         )
-
     # single random targeting diagonal (averaged across models)
     fig.add_trace(
         go.Scatter(
@@ -213,7 +215,6 @@ def plot_combined_incremental_response_rate(qini_bins_by_model):
             line=dict(dash="dash", color="grey"),
         )
     )
-
     fig.update_layout(
         template="plotly_white",
         title="Qini curve| All Models",
@@ -223,7 +224,6 @@ def plot_combined_incremental_response_rate(qini_bins_by_model):
         yaxis=dict(title="Cumulative Incremental Gain", tickformat=".2%"),
     )
     return fig
-    
 ################################################################################################
 # Function to return the prior probabilities of treatments per treatment group, i.e. 0 = control
 # Used for counteracting the imbalance of treatment groups
