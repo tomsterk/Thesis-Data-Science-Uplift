@@ -10,7 +10,7 @@ Thesis Code/
 │
 ├── Functions/
 │   ├── __init__.py
-│   └── data_utils.py                  # Functions used for modelling, and visualisations
+│   └── data_utils.py                                                     # Functions used for modelling, and visualisations
 │
 ├── Queries Metabase/
 |   SQL queries used to generate the customer data from the database
@@ -37,7 +37,7 @@ Thesis Code/
 │   ├── treatment_selected_binary.csv                                     # Treatment group selection — Binary RF
 │   ├── treatment_selected_multi.csv                                      # Treatment group selection — MTUM
 │   ├── *_2.csv                                                           # New runs with additonal information on the control group about what incentive the control group received
-│   ├── Upload_crm_phase_2_winback.csv                                    # Combined file with all the csutomers that were selected for targeting
+│   ├── Upload_crm_phase_2_winback.csv                                    # Combined file with all the customers that were selected for targeting and customers for the control group
 |   └── Correction_crm_users.csv                                          # Customers that were eligible to target with e-mail marketing in the customer data platform of the CRM team
 │
 ├── Output/
