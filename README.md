@@ -36,7 +36,7 @@ Thesis Code/
 │   ├── control_selected_multi.csv                                        # Control group selection — MTUM
 │   ├── treatment_selected_binary.csv                                     # Treatment group selection — Binary RF
 │   ├── treatment_selected_multi.csv                                      # Treatment group selection — MTUM
-│   ├── *_2.csv                                                           # New runs with additonal information on the control group about what incentive the control group received
+│   ├── *_2.csv                                                           # Same customers as the files without _2. The _2 files were generated because the earlier files did not contain the treatment control group which were needed for the evaluation. 
 │   ├── Upload_crm_phase_2_winback.csv                                    # Combined file with all the customers that were selected for targeting and customers for the control group
 |   └── Correction_crm_users.csv                                          # Customers that were eligible to target with e-mail marketing in the customer data platform of the CRM team
 │
@@ -60,11 +60,11 @@ Thesis Code/
  
 | # | Notebook | Description |
 |---|----------|-------------|
-| 1 | `Randomness check experimental phase 1.ipynb` | Validates pretreatment randomisation of treatment/control assignment in Phase 1. | Chapter 4.1.1 in the Thesis
-| 2 | `Binary RF uplift experimental phase 1.ipynb` | Training of binary uplift models and evaluation of the models in Phase 1 | Chapter 4.1.3 in the Thesis
-| 3 | `MMOA multi outcome prediction phase 1.ipynb` | Trains the base models of the MTUM and applies dirichlet calibration | Chapter 4.1.4 in the Thesis
-| 4 | `MMOA calibration and evaluation phase 1.ipynb` | Evaluates the calibration of the different model configurations | Chapter 4.1.4 in the Thesis
-| 5 | `MMOA uplift phase 1.ipynb` | Computes MTUM uplift scores and Qini curves on Phase 1 experimental data. | Chapter 4.1.4 in the Thesis
+| 1 | `Randomness check experimental phase 1.ipynb` | Validates pretreatment randomisation of treatment/control assignment in Phase 1. | 
+| 2 | `Binary RF uplift experimental phase 1.ipynb` | Training of binary uplift models and evaluation of the models in Phase 1 | 
+| 3 | `MMOA multi outcome prediction phase 1.ipynb` | Trains the base models of the MTUM and applies dirichlet calibration | 
+| 4 | `MMOA calibration and evaluation phase 1.ipynb` | Evaluates the calibration of the different model configurations | 
+| 5 | `MMOA uplift phase 1.ipynb` | Computes MTUM uplift scores and Qini curves on Phase 1 experimental data. |
 
 
  
@@ -82,4 +82,8 @@ Thesis Code/
 |---|----------|-------------|
 | 9 | `Effectiveness experiments.ipynb` | Runs significance tests (pooled & per-arm) across both phases. Outputs to `Output/`. |
  
-
+### Covariates dashboard
+ 
+| # | Notebook | Description |
+|---|----------|-------------|
+| 10 | `Covariates analysis.ipynb` | Plotly dashboard used to share findings with key stakeholders within Holland & Barrett and explain CATE. |
