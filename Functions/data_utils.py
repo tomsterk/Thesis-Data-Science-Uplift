@@ -1,15 +1,49 @@
 import numpy as np
 import pandas as pd
 
+from pathlib import Path
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import OneHotEncoder
-from causalml.inference.tree import UpliftRandomForestClassifier 
+from causalml.inference.tree import UpliftRandomForestClassifier
 
-import plotly.express as px
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter
 
 from typing import Any, Dict, Iterable, Optional, Tuple, Union
+
+################################################################################################
+# IEEE Access figure settings
+# - 3.5 in (88 mm) single-column width
+# - Arial, 8 pt labels / 7 pt ticks
+# - Vector PDF, TrueType fonts embedded (fonttype 42)
+# - Grayscale-safe: greys + distinct linestyles/markers, no color coding
+################################################################################################
+
+OUTPUT_DIR = Path("Output/ieee_figures")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+plt.style.use("default")
+plt.rcParams.update({
+    "font.family":     "Arial",
+    "font.size":       8,
+    "axes.labelsize":  8,
+    "axes.linewidth":  0.6,
+    "xtick.labelsize": 7,
+    "ytick.labelsize": 7,
+    "legend.fontsize": 7,
+    "pdf.fonttype":    42,
+    "ps.fonttype":     42,
+})
+FIGSIZE = (3.5, 2.4)
+
+# Grayscale-safe styling per model position: (grey level, linestyle, marker)
+MODEL_STYLES = [
+    ("0.0",  "-",  "o"),
+    ("0.35", "--", "s"),
+    ("0.55", "-.", "^"),
+    ("0.2",  "-",  "D"),
+]
 
 
 def coerce_metrics_to_numeric(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
@@ -21,7 +55,7 @@ def coerce_metrics_to_numeric(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame
         .apply(pd.to_numeric, errors="coerce")
     )
     return df
-    
+
 def uplift_by_decile_bin(
     df,
     treatment_col="treatment",
@@ -120,110 +154,112 @@ def uplift_by_decile_bin(
     df_out["lift_over_random"] = df_out["inc_gains"] - df_out["random_expected"]
 
     return df_out
-    
+
 def calc_auuc(df):
     """Area between uplift curve and random baseline (trapezoid rule)."""
     x = np.concatenate([[0], df["cum_population_frac"].values])
     y = np.concatenate([[0], df["lift_over_random"].values])
     return np.trapezoid(y, x)
 
+def _style_qini_axes(ax):
+    """Apply the shared IEEE axis styling to a Qini plot."""
+    ax.set_facecolor("white")
+    ax.set_xlabel("% Targeted")
+    ax.set_ylabel("Cumulative Incremental Gain")
+    ax.xaxis.set_major_formatter(PercentFormatter(xmax=1, decimals=0))
+    ax.yaxis.set_major_formatter(PercentFormatter(xmax=1, decimals=2))
+    ax.grid(True, axis="y", color="0.85", linewidth=0.5, zorder=0)
+    ax.set_axisbelow(True)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_linewidth(0.6)
+    ax.spines["bottom"].set_linewidth(0.6)
+    ax.tick_params(width=0.6, length=3, labelsize=7)
+    ax.margins(x=0.02)
+    ax.legend(frameon=False, loc="upper left", handlelength=1.8, borderpad=0.4)
+    
 def plot_incremental_response_rate(uplift_curve_df):
+    """Single-model Qini curve with random baseline and AUUC annotation."""
     df = uplift_curve_df.copy()
     df["pct_targeted"] = df["bin"] / df["bin"].max()
     final_inc_gain = df["inc_gains"].iloc[-1]
     auuc = calc_auuc(df)
 
-    fig = px.line(
-        df,
-        x="pct_targeted",
-        y="inc_gains",
-        markers=True,
-        labels={
-            "pct_targeted": "% Targeted",
-            "inc_gains": "Cumulative Incremental Gain",
-        },
-        title="Qini Curve",
+    fig, ax = plt.subplots(figsize=FIGSIZE)
+
+    ax.plot(
+        df["pct_targeted"], df["inc_gains"],
+        color="0.0", linestyle="-", marker="o", markersize=3.5,
+        markeredgewidth=0, linewidth=1.1, label="Model Uplift", zorder=3,
+    )
+    ax.plot(
+        [0, 1], [0, final_inc_gain],
+        color="0.55", linestyle=(0, (4, 3)), linewidth=0.9,
+        label="Random Targeting", zorder=2,
     )
 
-    # Rename the default px.line trace
-    fig.data[0].name = "Model Uplift"
-    fig.data[0].showlegend = True
+    _style_qini_axes(ax)
 
-    fig.add_trace(
-        go.Scatter(
-            x=[0, 1],
-            y=[0, final_inc_gain],
-            mode="lines",
-            name="Random Targeting",
-            line=dict(dash="dash"),
-        )
+    leg = ax.get_legend()
+    fig.canvas.draw()
+    leg_box = leg.get_window_extent().transformed(ax.transAxes.inverted())
+    _style_qini_axes(ax)
+
+    leg = ax.get_legend()
+    fig.canvas.draw()
+    leg_box = leg.get_window_extent().transformed(ax.transAxes.inverted())
+    ax.text(
+        leg_box.x0 + 0.02, leg_box.y0 - 0.02, f"AUUC = {auuc:.5f}",
+        transform=ax.transAxes, ha="left", va="top", fontsize=7,
+        bbox=dict(facecolor="white", edgecolor="0.3", linewidth=0.5, pad=2.5),
     )
 
-    fig.add_annotation(
-        x=0.95, y=1.2,
-        xref="paper", yref="paper",
-        text=f"AUUC = {auuc:.5f}",
-        showarrow=False,
-        font=dict(size=13),
-        bgcolor="white",
-        bordercolor="black",
-        borderwidth=1,
-        borderpad=4,
-    )
-
-    fig.update_layout(
-        template="plotly_white",
-        title_x=0.5,
-        legend_title_text="",
-        xaxis=dict(tickformat=".0%"),
-        yaxis=dict(tickformat=".2%"),
-    )
-
+    fig.tight_layout()
     return fig
+    
+# Color + grayscale-safe styling per model position: (color, linestyle, marker)
+MODEL_STYLES = [
+    ("#000000", "-",  "o"),  # black
+    ("#0072B2", "--", "s"),  # blue
+    ("#D55E00", "-.", "^"),  # vermillion
+    ("#009E73", "-",  "D"),  # green
+]
 def plot_combined_incremental_response_rate(qini_bins_by_model):
-    fig = go.Figure()
-    colors = px.colors.qualitative.Set1
-    symbols = ["circle", "square", "triangle-up", "diamond", "cross", "x", "star"]
+    """Multi-model Qini curves with a single averaged random baseline."""
+    fig, ax = plt.subplots(figsize=FIGSIZE)
+
     # average final_inc_gain across all models for the random diagonal
-    avg_final = qini_bins_by_model.groupby("model").apply(
+    avg_final = qini_bins_by_model.groupby("model_paper").apply(
         lambda g: g["inc_gains"].iloc[-1]
     ).mean()
-    for i, (model, g) in enumerate(qini_bins_by_model.groupby("model")):
+
+    for i, (model, g) in enumerate(qini_bins_by_model.groupby("model_paper")):
         df = g.copy()
         df["pct_targeted"] = df["bin"] / df["bin"].max()
-        fig.add_trace(
-            go.Scatter(
-                x=df["pct_targeted"],
-                y=df["inc_gains"],
-                mode="lines+markers",
-                name=f"{model}",
-                line=dict(color=colors[i % len(colors)]),
-                marker=dict(
-                    symbol=symbols[i % len(symbols)],
-                    size=9,
-                    color=colors[i % len(colors)],
-                ),
-            )
+        color, linestyle, marker = MODEL_STYLES[i % len(MODEL_STYLES)]
+        ax.plot(
+            df["pct_targeted"], df["inc_gains"],
+            color=color, linestyle=linestyle, marker=marker,
+            markersize=3.5, markeredgewidth=0, linewidth=1.1, label=model, zorder=3,
         )
+
     # single random targeting diagonal (averaged across models)
-    fig.add_trace(
-        go.Scatter(
-            x=[0, 1],
-            y=[0, avg_final],
-            mode="lines",
-            name="Random Targeting",
-            line=dict(dash="dash", color="grey"),
-        )
+    ax.plot(
+        [0, 1], [0, avg_final],
+        color="0.7", linestyle=":", linewidth=0.9,
+        label="Random Targeting", zorder=2,
     )
-    fig.update_layout(
-        template="plotly_white",
-        title="Qini curve| All Models",
-        title_x=0.5,
-        legend_title_text="",
-        xaxis=dict(title="% Targeted", tickformat=".0%"),
-        yaxis=dict(title="Cumulative Incremental Gain", tickformat=".2%"),
+
+    _style_qini_axes(ax)
+    ax.legend(
+        frameon=False, loc="upper left", bbox_to_anchor=(1.02, 1.0),
+        handlelength=1.8, borderpad=0.2, labelspacing=0.3,
     )
+    fig.tight_layout()
     return fig
+
+
+
 ################################################################################################
 # Function to return the prior probabilities of treatments per treatment group, i.e. 0 = control
 # Used for counteracting the imbalance of treatment groups
