@@ -226,7 +226,7 @@ MODEL_STYLES = [
 ]
 def plot_combined_incremental_response_rate(qini_bins_by_model):
     """Multi-model Qini curves with a single averaged random baseline."""
-    fig, ax = plt.subplots(figsize=FIGSIZE)
+    fig, ax = plt.subplots(figsize=(5.5, 1.9))
 
     # average final_inc_gain across all models for the random diagonal
     avg_final = qini_bins_by_model.groupby("model_paper").apply(
@@ -257,7 +257,6 @@ def plot_combined_incremental_response_rate(qini_bins_by_model):
     )
     fig.tight_layout()
     return fig
-
 
 
 ################################################################################################
